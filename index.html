@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Sharing Site</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .channel, .upload-form, .subscribe-form {
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        input[type="text"], input[type="file"], input[type="submit"] {
+            display: block;
+            margin-bottom: 10px;
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .channel-list, .video-list {
+            margin-bottom: 20px;
+        }
+        .channel-item, .video-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Video Sharing Site</h1>
+</header>
+
+<div class="container">
+
+    <!-- Channel Creation Form -->
+    <div class="channel">
+        <h2>Create a Channel</h2>
+        <form id="create-channel-form">
+            <input type="text" id="channel-username" placeholder="Enter channel username" required>
+            <input type="submit" value="Create Channel">
+        </form>
+    </div>
+
+    <!-- Channel Subscription Form -->
+    <div class="subscribe-form">
+        <h2>Subscribe to a Channel</h2>
+        <form id="subscribe-form">
+            <input type="text" id="subscribe-username" placeholder="Enter channel username to subscribe" required>
+            <button type="button" onclick="subscribe()">Subscribe</button>
+        </form>
+    </div>
+
+    <!-- Video Upload Form -->
+    <div class="upload-form">
+        <h2>Upload a Video</h2>
+        <form id="upload-form">
+            <input type="text" id="video-title" placeholder="Enter video title" required>
+            <input type="file" id="video-file" accept="video/*" required>
+            <input type="submit" value="Upload Video">
+        </form>
+    </div>
+
+    <!-- Display Channel List -->
+    <div class="channel-list">
+        <h2>Channels</h2>
+        <!-- Example Channel List -->
+        <div class="channel-item">Channel 1</div>
+        <div class="channel-item">Channel 2</div>
+    </div>
+
+    <!-- Display Video List -->
+    <div class="video-list">
+        <h2>Videos</h2>
+        <!-- Example Video List -->
+        <div class="video-item">Video 1</div>
+        <div class="video-item">Video 2</div>
+    </div>
+
+</div>
+
+<script>
+    // JavaScript for form handling can be added here
+
+    // Example function for subscribing to a channel (no real functionality here)
+    function subscribe() {
+        const username = document.getElementById('subscribe-username').value;
+        alert('Subscribed to ' + username);
+    }
+
+    // Example form submission handling (no real functionality here)
+    document.getElementById('create-channel-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const username = document.getElementById('channel-username').value;
+        alert('Channel created with username: ' + username);
+    });
+
+    document.getElementById('upload-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const title = document.getElementById('video-title').value;
+        alert('Video uploaded: ' + title);
+    });
+</script>
+
+</body>
+</html>
