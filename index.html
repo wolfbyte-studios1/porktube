@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>porktube</title>
+    <title>VideoShare</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,14 +22,14 @@
             margin: 0 auto;
             padding: 20px;
         }
-        .channel, .upload-form, .subscribe-form {
+        .upload-form, .video-list {
             background: #fff;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             padding: 15px;
             margin-bottom: 20px;
         }
-        input[type="text"], input[type="file"], input[type="submit"] {
+        input[type="text"], input[type="file"], input[type="submit"], button {
             display: block;
             margin-bottom: 10px;
             width: 100%;
@@ -38,50 +38,32 @@
             border: 1px solid #ddd;
         }
         button {
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
             background-color: #007BFF;
             color: white;
+            border: none;
             cursor: pointer;
         }
         button:hover {
             background-color: #0056b3;
         }
-        .channel-list, .video-list {
-            margin-bottom: 20px;
-        }
-        .channel-item, .video-item {
+        .video-item {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 1px solid #ddd;
-            padding: 10px 0;
+        }
+        video {
+            max-width: 100%;
+            height: auto;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Video Sharing Site</h1>
+    <h1>VideoShare</h1>
 </header>
 
 <div class="container">
-
-    <!-- Channel Creation Form -->
-    <div class="channel">
-        <h2>Create a Channel</h2>
-        <form id="create-channel-form">
-            <input type="text" id="channel-username" placeholder="Enter channel username" required>
-            <input type="submit" value="Create Channel">
-        </form>
-    </div>
-
-    <!-- Channel Subscription Form -->
-    <div class="subscribe-form">
-        <h2>Subscribe to a Channel</h2>
-        <form id="subscribe-form">
-            <input type="text" id="subscribe-username" placeholder="Enter channel username to subscribe" required>
-            <button type="button" onclick="subscribe()">Subscribe</button>
-        </form>
-    </div>
 
     <!-- Video Upload Form -->
     <div class="upload-form">
@@ -93,12 +75,6 @@
         </form>
     </div>
 
-    <!-- Display Channel List -->
-    <div class="channel-list">
-        <h2>Channels</h2>
-        <div id="channels"></div>
-    </div>
-
     <!-- Display Video List -->
     <div class="video-list">
         <h2>Videos</h2>
@@ -108,52 +84,34 @@
 </div>
 
 <script>
-    // Load channels and videos from localStorage
+    // Load videos from localStorage
     document.addEventListener('DOMContentLoaded', function() {
-        loadChannels();
         loadVideos();
-        // Poll for updates every 5 seconds
-        setInterval(loadVideos, 5000);
     });
-
-    // Create a channel and save it to localStorage
-    document.getElementById('create-channel-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const username = document.getElementById('channel-username').value;
-        const channels = JSON.parse(localStorage.getItem('channels')) || [];
-        channels.push(username);
-        localStorage.setItem('channels', JSON.stringify(channels));
-        document.getElementById('channel-username').value = '';
-        loadChannels();
-        alert('Channel created with username: ' + username);
-    });
-
-    // Subscribe to a channel (no actual functionality, just an alert)
-    function subscribe() {
-        const username = document.getElementById('subscribe-username').value;
-        alert('Subscribed to ' + username);
-    }
 
     // Upload a video and save it to localStorage
     document.getElementById('upload-form').addEventListener('submit', function(event) {
         event.preventDefault();
         const title = document.getElementById('video-title').value;
         const videoFile = document.getElementById('video-file').files[0];
-        const videos = JSON.parse(localStorage.getItem('videos')) || [];
-        videos.push({ title: title, date: new Date().toISOString() });
-        localStorage.setItem('videos', JSON.stringify(videos));
-        document.getElementById('video-title').value = '';
-        document.getElementById('video-file').value = '';
-        loadVideos();
-        alert('Video uploaded: ' + title);
+        if (!videoFile) {
+            alert('Please select a video file.');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const videoData = e.target.result;
+            const videos = JSON.parse(localStorage.getItem('videos')) || [];
+            videos.push({ title: title, data: videoData });
+            localStorage.setItem('videos', JSON.stringify(videos));
+            document.getElementById('video-title').value = '';
+            document.getElementById('video-file').value = '';
+            loadVideos();
+            alert('Video uploaded: ' + title);
+        };
+        reader.readAsDataURL(videoFile);
     });
-
-    // Load channels from localStorage and display them
-    function loadChannels() {
-        const channels = JSON.parse(localStorage.getItem('channels')) || [];
-        const channelContainer = document.getElementById('channels');
-        channelContainer.innerHTML = channels.map(channel => `<div class="channel-item">${channel}</div>`).join('');
-    }
 
     // Load videos from localStorage and display them
     function loadVideos() {
@@ -161,8 +119,15 @@
         const videoContainer = document.getElementById('videos');
         videoContainer.innerHTML = videos
             .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort videos by date, most recent first
-            .map(video => `<div class="video-item">${video.title} <small>(${new Date(video.date).toLocaleString()})</small></div>`)
-            .join('');
+            .map(video => `
+                <div class="video-item">
+                    <h3>${video.title}</h3>
+                    <video controls>
+                        <source src="${video.data}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            `).join('');
     }
 </script>
 
