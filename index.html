@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Sharing Site</title>
+    <title>porktube</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -96,42 +96,74 @@
     <!-- Display Channel List -->
     <div class="channel-list">
         <h2>Channels</h2>
-        <!-- Example Channel List -->
-        <div class="channel-item">Channel 1</div>
-        <div class="channel-item">Channel 2</div>
+        <div id="channels"></div>
     </div>
 
     <!-- Display Video List -->
     <div class="video-list">
         <h2>Videos</h2>
-        <!-- Example Video List -->
-        <div class="video-item">Video 1</div>
-        <div class="video-item">Video 2</div>
+        <div id="videos"></div>
     </div>
 
 </div>
 
 <script>
-    // JavaScript for form handling can be added here
+    // Load channels and videos from localStorage
+    document.addEventListener('DOMContentLoaded', function() {
+        loadChannels();
+        loadVideos();
+        // Poll for updates every 5 seconds
+        setInterval(loadVideos, 5000);
+    });
 
-    // Example function for subscribing to a channel (no real functionality here)
+    // Create a channel and save it to localStorage
+    document.getElementById('create-channel-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const username = document.getElementById('channel-username').value;
+        const channels = JSON.parse(localStorage.getItem('channels')) || [];
+        channels.push(username);
+        localStorage.setItem('channels', JSON.stringify(channels));
+        document.getElementById('channel-username').value = '';
+        loadChannels();
+        alert('Channel created with username: ' + username);
+    });
+
+    // Subscribe to a channel (no actual functionality, just an alert)
     function subscribe() {
         const username = document.getElementById('subscribe-username').value;
         alert('Subscribed to ' + username);
     }
 
-    // Example form submission handling (no real functionality here)
-    document.getElementById('create-channel-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const username = document.getElementById('channel-username').value;
-        alert('Channel created with username: ' + username);
-    });
-
+    // Upload a video and save it to localStorage
     document.getElementById('upload-form').addEventListener('submit', function(event) {
         event.preventDefault();
         const title = document.getElementById('video-title').value;
+        const videoFile = document.getElementById('video-file').files[0];
+        const videos = JSON.parse(localStorage.getItem('videos')) || [];
+        videos.push({ title: title, date: new Date().toISOString() });
+        localStorage.setItem('videos', JSON.stringify(videos));
+        document.getElementById('video-title').value = '';
+        document.getElementById('video-file').value = '';
+        loadVideos();
         alert('Video uploaded: ' + title);
     });
+
+    // Load channels from localStorage and display them
+    function loadChannels() {
+        const channels = JSON.parse(localStorage.getItem('channels')) || [];
+        const channelContainer = document.getElementById('channels');
+        channelContainer.innerHTML = channels.map(channel => `<div class="channel-item">${channel}</div>`).join('');
+    }
+
+    // Load videos from localStorage and display them
+    function loadVideos() {
+        const videos = JSON.parse(localStorage.getItem('videos')) || [];
+        const videoContainer = document.getElementById('videos');
+        videoContainer.innerHTML = videos
+            .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort videos by date, most recent first
+            .map(video => `<div class="video-item">${video.title} <small>(${new Date(video.date).toLocaleString()})</small></div>`)
+            .join('');
+    }
 </script>
 
 </body>
